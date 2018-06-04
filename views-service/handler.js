@@ -1,16 +1,23 @@
 'use strict';
+var request   = require('./views/requestHandler');
+// entry point 
+module.exports.views = (event, context, callback) => {
+ 
+  switch ( event.httpMethod ) {
+    
+    case "GET":
+      return request.getRequestHandler( event, context, callback );
+    break;
+    case "POST":
+      return request.postRequestHandler( event, context, callback );
+    break;
+    case "PUT":
+      return request.putRequestHandler( event, context, callback );
+    break;
+    
+    default:
+      return callback( null , { statusCode : 401 , message:" Invalid Request Method"});
+    break;
+  }
 
-module.exports.hello = (event, context, callback) => {
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-    }),
-  };
-
-  callback(null, response);
-
-  // Use this code if you don't use the http event with the LAMBDA-PROXY integration
-  // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });
 };

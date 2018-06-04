@@ -11,6 +11,9 @@
 #
 # Happy Coding!
 
+plugins:
+  - serverless-offline
+
 service: views-service
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -55,16 +58,22 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  views:
+    handler: handler.views
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
+    events:
+      - http:
+          path: /views
+          method: post
+      - http:
+          path: /views
+          method: get
+      - http:
+          path: /views
+          method: put
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic

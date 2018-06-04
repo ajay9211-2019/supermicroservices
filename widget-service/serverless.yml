@@ -11,6 +11,9 @@
 #
 # Happy Coding!
 
+plugins:
+  - serverless-offline
+
 service: widget-service
 
 # You can pin your service to only deploy with a specific Serverless version
@@ -22,8 +25,8 @@ provider:
   runtime: nodejs6.10
 
 # you can overwrite defaults here
-#  stage: dev
-#  region: us-east-1
+  stage: dev
+  region: us-east-2
 
 # you can add statements to the Lambda function's IAM Role here
 #  iamRoleStatements:
@@ -55,16 +58,22 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  widget:
+    handler: handler.widget
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
-#    events:
-#      - http:
-#          path: users/create
-#          method: get
+    events:
+      - http:
+          path: /widget
+          method: post
+      - http:
+          path: /widget
+          method: get
+      - http:
+          path: /widget
+          method: put
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
