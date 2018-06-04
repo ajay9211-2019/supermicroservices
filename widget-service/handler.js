@@ -1,4 +1,5 @@
 'use strict';
+
 var request   = require('./widget/requestHandler');
 // entry point 
 module.exports.widget = (event, context, callback) => {
