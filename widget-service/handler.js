@@ -1,6 +1,8 @@
 'use strict';
 
-var request   = require('./widget/requestHandler');
+var path = require('path');
+global.appRoot = path.resolve(__dirname);
+var request   = require(appRoot+'/widget/requestHandler');
 // entry point 
 module.exports.widget = (event, context, callback) => {
  

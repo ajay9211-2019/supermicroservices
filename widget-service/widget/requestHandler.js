@@ -1,11 +1,11 @@
 // load external files or modules.
-var response  = require('./response');
-var table     = require('./table');
-var helper    = require('./helper');
+var response  = require(appRoot+'/widget/response');
+var table     = require(appRoot+'/widget/table');
+var helper    = require(appRoot+'/widget/helper');
 
 // Get request Handler
-module.exports.getRequestHandler = async ( event, context, callback ) => {
-	
+module.exports.getRequestHandler = async function( event, context, callback ){
+	//return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
 	var requestData = await helper.validateRequestData( event );
 	if( false == requestData ){
 		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
@@ -41,3 +41,10 @@ module.exports.putRequestHandler = ( event, context, callback ) => {
    
    return callback( null , response.getJsonResponse( {'data':'Hi put request'} ) );
 };
+
+
+async function getRequest( ){
+	
+}
+
+
