@@ -69,7 +69,7 @@ functions:
           path: /widget
           method: post
       - http:
-          path: /widget
+          path: /widget/{id}/{userid}
           method: get
       - http:
           path: /widget

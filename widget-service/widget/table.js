@@ -4,20 +4,25 @@ const docClient   = new AWS.DynamoDB.DocumentClient({ region : 'us-east-2' });
 
 module.exports.get = ( tableName , jsonWhereCondition ) => {
 
-	let paramsTable = {
-	              TableName: tableName,
-	              Key:jsonWhereCondition,
-	          };
-   
-   docClient.get( paramsTable ,  function( err , data ) {
-   	if( err ){
-   		return err;
-   	}
-   	console.log( data );
-   	return data;
+	return new Promise((resolve) => {
 
-   });
-};
+		let paramsTable = {
+          	TableName: tableName,
+          	Key:jsonWhereCondition,
+      	};
+   	
+		docClient.get( paramsTable, function(err, data) {
+			if( err ){
+				resolve(err);
+			}else{
+				resolve(data.Item);
+			}
+			
+		});
+		        
+	});
+
+ };
 
 
 module.exports.put = ( tableName , jsonWhereCondition ) => {
@@ -28,10 +33,34 @@ module.exports.put = ( tableName , jsonWhereCondition ) => {
 	          };
 
    	docClient.put( params, function(err, data) {
-		  if (err) {
-		     return err;
-		  }
-
-		  return data;
+		if (err) {
+		   return callback(null, err );
+		}
+		return callback(null, data ); 
+		 
     });
+};
+
+
+module.exports.batchProductGet = ( arrJsonAttributes ) => {
+
+	var paramsTable = {
+			  RequestItems: {
+			    "sproducts": {
+			      Keys: arrJsonAttributes
+			    }
+			  }
+			};
+
+	return new Promise((resolve) => {
+		docClient.batchGet( paramsTable, function(err, data) {
+			if( err ){
+				resolve(err);
+			}else{
+				resolve(data.Responses);
+			}
+		
+		});
+
+	});
 };
