@@ -42,7 +42,7 @@ module.exports.put = ( tableName , jsonWhereCondition ) => {
 };
 
 
-module.exports.batchProductGet = ( arrJsonAttributes ) => {
+module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 
 	var paramsTable = {
 			  RequestItems: {

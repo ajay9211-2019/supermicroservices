@@ -2,16 +2,19 @@
 module.exports.prepareHtml = ( productData , objWidgetData ) => {
 
 var prepareHtml  =  objWidgetData.template;
- // return productData;
-  prepareHtml  += `<script type="text/javascript">
-             var context = ${ JSON.stringify( {"products":productData.sproducts} ) };
-           var html    = template(context);
-           document.getElementById("row").innerHTML = html;
-         </script>`;
+ //return objWidgetData;
+
+  prepareHtml  += `
+                var context = ${ JSON.stringify( {"products":objWidgetData.data.products} ) };
+                var theCompiledHtml    = theTemplate(context);
+                $('#frameid2').contents().find('#previewarea').html(theCompiledHtml);
+                  // Add the compiled html to the page
+                $('#previewarea').html(theCompiledHtml);
+            });
+            </script>
+          `;
 
   return prepareHtml;
-
-
 };
 
 

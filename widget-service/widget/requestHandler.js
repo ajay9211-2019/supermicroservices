@@ -5,19 +5,20 @@ var helper    = require(appRoot+'/widget/helper');
 
 // Get request Handler
 module.exports.getRequestHandler = async function( event, context, callback ){
-	//return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
+	
 	var requestData = await helper.validateRequestData( event );
 	if( false == requestData ){
 		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
 	}
-	
+	//var objUserData = await table.get( 'users',{'userid':requestData.userid} );
+
 	var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
 	
 	if( typeof objWidgetData == "undefined" || objWidgetData.asinlist == '' ){
 		return callback( null , response.getJsonResponse( '',400,'Asinlist not found:swidgets.') );
 	}
 
-	var objProductData = await table.batchProductGet( objWidgetData.asinlist );
+	var objProductData = await table.getBatchProduct( objWidgetData.asinlist );
 	
 	if( !objProductData.sproducts ){
 		return callback( null , response.getJsonResponse( '',400,'Products not found:sproducts.') );
@@ -27,7 +28,6 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 	delete objProductData; delete objWidgetData;
 
 	return callback( null , response.getHtmlResponse( preparedHtml  ) );
-	
 };
 
 // Post request Handler
@@ -43,8 +43,5 @@ module.exports.putRequestHandler = ( event, context, callback ) => {
 };
 
 
-async function getRequest( ){
-	
-}
 
 
