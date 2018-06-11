@@ -9,7 +9,7 @@ module.exports.rating = (event, context, callback) => {
   switch ( event.httpMethod ) {
     
     case "GET":
-      requestHandler.requestHandler( event, context, callback );
+      return requestHandler.requestHandler( event, context, callback );
     break;
 
     default:

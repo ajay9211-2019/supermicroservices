@@ -10,12 +10,19 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 	if( false == requestData ){
 		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
 	}
-	//var objUserData = await table.get( 'users',{'userid':requestData.userid} );
+	var objUserData = await table.get( 'susers',{'userid':requestData.userid} );
+	// validate user and accesstoken
+	if( typeof objUserData == "undefined" ){
+		return callback( null , response.getJsonResponse( '',400,'Invalid user.' ) );
+	}
+	if( objUserData.accesstoken != requestData.accesstoken || objUserData.accesstoken == '' ){
+		return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
+	}
 
 	var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
 	
-	if( typeof objWidgetData == "undefined" || objWidgetData.asinlist == '' ){
-		return callback( null , response.getJsonResponse( '',400,'Asinlist not found:swidgets.') );
+	if( typeof objWidgetData == "undefined" || objWidgetData.asinlist.length == 0 ){
+		return callback( null , response.getJsonResponse( '',400,'Asinlist not found:widgets.') );
 	}
 
 	var objProductData = await table.getBatchProduct( objWidgetData.asinlist );

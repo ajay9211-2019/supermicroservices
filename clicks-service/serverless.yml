@@ -58,21 +58,21 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  views:
-    handler: handler.views
+  clicks:
+    handler: handler.clicks
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
     events:
       - http:
-          path: /views
+          path: /clicks
           method: post
       - http:
-          path: /views
+          path: /clicks
           method: get
       - http:
-          path: /views
+          path: /clicks
           method: put
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)

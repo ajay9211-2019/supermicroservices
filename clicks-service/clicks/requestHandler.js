@@ -29,9 +29,10 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 				    		'userid':requestData.userid,
 				    		'createtime':Date.now(),
 				    		'widgetid':requestData.widgetid,
+				    		'asin'    :requestData.asin
 				    		};
 
-    var responseData = table.put( "sviews",prepareViewsData );
+    var responseData = table.put( "sclicks",prepareViewsData );
     let msg = 'failed';
     if( responseData.domain._eventsCount == 1  ){
     	msg = 'Success';

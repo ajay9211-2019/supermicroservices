@@ -5,7 +5,7 @@ var prepareHtml  =  objWidgetData.template;
  //return objWidgetData;
 
   prepareHtml  += `
-                var context = ${ JSON.stringify( {"products":objWidgetData.data.products} ) };
+                var context = ${ JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme} ) };
                 var theCompiledHtml    = theTemplate(context);
                 $('#frameid2').contents().find('#previewarea').html(theCompiledHtml);
                   // Add the compiled html to the page
@@ -27,7 +27,7 @@ module.exports.validateRequestData = ( requestData ) => {
   var data = {
               "widgetid":parseInt( requestData.pathParameters.id ),
               "userid":parseInt( requestData.pathParameters.userid ),
-              //"region":requestData.pathParameters.region.toString()
+              "accesstoken":requestData.pathParameters.accesstoken
             };
   return data;
 
