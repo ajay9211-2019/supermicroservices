@@ -26,5 +26,18 @@ module.exports.requestHandler = ( event, context, callback) => {
         return callback(null, response);
       
     
-    }).catch( callback );
+    }).catch(function (error) {
+
+         const response = {
+                statusCode: 200,
+                headers: {
+                        "Access-Control-Allow-Origin" : "*", // Required for CORS support to work
+                      },
+                body: JSON.stringify({
+                 data: {"error": "url resource not found. "},
+                 statusCode: 404,
+                }),
+        };
+      callback(null, response );
+  });
 };
