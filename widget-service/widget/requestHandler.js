@@ -2,6 +2,7 @@
 var response  = require(appRoot+'/widget/response');
 var table     = require(appRoot+'/widget/table');
 var helper    = require(appRoot+'/widget/helper');
+const viewsValue = 1;
 
 // Get request Handler
 module.exports.getRequestHandler = async function( event, context, callback ){
@@ -32,8 +33,22 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 	}
 
 	var preparedHtml = await helper.prepareHtml( objProductData , objWidgetData );
-	delete objProductData; delete objWidgetData;
+	
+	//update views users table & views table & swidgets
+	objUserData.views   = viewsValue+parseInt( objUserData.views );
+	objWidgetData.views = viewsValue+parseInt( objWidgetData.views );
+	
+	let viewData  = {
+					'userid': objUserData.userid,
+					'createtime':Date.now(),
+					'widgetid':requestData.widgetid
+					};
+					
+	table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, objWidgetData.views );				
+	table.updateViews( 'susers',{'userid':objUserData.userid}, objUserData.views );
+	table.put( 'sviews',viewData );
 
+	delete objProductData; delete objWidgetData; delete viewData;delete objUserData;delete requestData;
 	return callback( null , response.getHtmlResponse( preparedHtml  ) );
 };
 

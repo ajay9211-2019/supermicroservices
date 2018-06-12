@@ -25,18 +25,18 @@ module.exports.get = ( tableName , jsonWhereCondition ) => {
  };
 
 
-module.exports.put = ( tableName , jsonWhereCondition ) => {
+module.exports.put = ( tableName , jsonData ) => {
 
 	let paramsTable = {
 	              TableName: tableName,
 	              Item:jsonData,
 	          };
-
-   	docClient.put( params, function(err, data) {
+	         
+   	docClient.put( paramsTable, function(err, data) {
 		if (err) {
-		   return callback(null, err );
+		   return err;
 		}
-		return callback(null, data ); 
+		return data; 
 		 
     });
 };
@@ -63,4 +63,28 @@ module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 		});
 
 	});
+};
+
+
+module.exports.updateViews = ( tableName , jsonData,viewscount) => {
+
+	let paramsTable = {
+			              TableName: tableName,
+			              Key:jsonData,
+			              UpdateExpression: 'set #views = :views',
+			              ExpressionAttributeNames: {'#views':'views'},
+			              ExpressionAttributeValues: {
+							    ':views' : viewscount
+							}
+	          		};
+	docClient.update( paramsTable, function(err, data) {
+		if (err) {
+			console.log( err );
+		   return err;
+		}else{
+			console.log( data );
+		return data; 
+		}
+	});
+			
 };
