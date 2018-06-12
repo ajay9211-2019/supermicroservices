@@ -6,7 +6,7 @@ module.exports.extractRatings = ( html , region) => {
  const $    = cheerio.load(html);
   var rating = $('.a-size-base').html();
   var revies = $('.a-link-emphasis').html();
-
+  
   try {
 
         rating = rating.replace("\n","");
@@ -24,8 +24,13 @@ module.exports.extractRatings = ( html , region) => {
           if( rating.length > 0 ){
             rating = rating[0]+rating[1]+rating[2];
           }
-          
-          revies = revies.match(/\d+/g).map(Number);
+          let matches = revies.match(/\d+/g);
+          if ( matches != null) {
+            revies = revies.match(/\d+/g).map(Number);
+          }else{
+            revies = 0;
+          }
+
         }
 
         var response = {
