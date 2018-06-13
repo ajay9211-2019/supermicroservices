@@ -44,3 +44,27 @@ module.exports.put = ( tableName , jsonData ) => {
 
     });
 };
+
+module.exports.updateClicks = ( tableName , jsonData,clickscount) => {
+	console.log( clickscount );
+	let paramsTable = {
+			              TableName: tableName,
+			              Key:jsonData,
+			              UpdateExpression: 'set #clicks = :clicks',
+			              ExpressionAttributeNames: {'#clicks':'clicks'},
+			              ExpressionAttributeValues: {
+							    ':clicks' : clickscount
+							}
+	          		};
+	docClient.update( paramsTable, function(err, data) {
+		if (err) {
+			console.log(err );
+		}else{
+			console.log("====update-clicks success===");
+		return data; 
+		}
+
+
+	});
+			
+};

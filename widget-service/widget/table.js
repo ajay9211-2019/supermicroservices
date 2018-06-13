@@ -79,12 +79,13 @@ module.exports.updateViews = ( tableName , jsonData,viewscount) => {
 	          		};
 	docClient.update( paramsTable, function(err, data) {
 		if (err) {
-			console.log( err );
-		   return err;
+			return err;
 		}else{
-			console.log( data );
+			console.log("====update-views===");
 		return data; 
 		}
+
+
 	});
 			
 };

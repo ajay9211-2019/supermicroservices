@@ -3,12 +3,6 @@ var response      = require('./response');
 var table         = require('./table');
 var helper        = require('./helper');
 
-// GET request Handler  
-module.exports.getRequestHandler = ( event, context, callback ) => {
-
-	return callback( null , response.getJsonResponse( {'data':'Hi get request'} ) );
-};
-
 // POST request Handler  
 module.exports.postRequestHandler = async ( event, context, callback ) => {
 
@@ -25,14 +19,27 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 	if( objUserData.accesstoken != requestData.accesstoken || objUserData.accesstoken == '' ){
 		return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
 	}
+	var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
+	
+	if( typeof objWidgetData == "undefined" ){
+		return callback( null , response.getJsonResponse( '',400,'Widgets not found.') );
+	}
+
     var prepareViewsData = {
 				    		'userid':requestData.userid,
 				    		'createtime':Date.now(),
 				    		'widgetid':requestData.widgetid,
 				    		'asin'    :requestData.asin
 				    		};
+	let intTotalClickvalue = 1;
+	if( typeof objWidgetData.clicks != 'undefined'){
+		intTotalClickvalue = intTotalClickvalue+parseInt( objWidgetData.clicks );
+	}	    		
+    
+	table.updateClicks( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, intTotalClickvalue );				
+	// table.updateViews( 'susers',{'userid':objUserData.userid}, objUserData.views );
+	var responseData = table.put( "sclicks",prepareViewsData );
 
-    var responseData = table.put( "sclicks",prepareViewsData );
     let msg = 'failed';
     if( responseData.domain._eventsCount == 1  ){
     	msg = 'Success';
@@ -41,6 +48,3 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 };
 
 // PUT request Handler 
-module.exports.putRequestHandler = ( event, context, callback ) => {
-   return callback( null , response.getJsonResponse( {'data':'Hi put request'} ) );
-};

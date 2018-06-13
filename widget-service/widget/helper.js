@@ -1,11 +1,10 @@
 
-module.exports.prepareHtml = ( productData , objWidgetData ) => {
+module.exports.prepareWidgetHtml = ( objWidgetData , trakingid) => {
 
 var prepareHtml  =  objWidgetData.template;
  //return objWidgetData;
-
   prepareHtml  += `
-                var context = ${ JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme} ) };
+                var context = ${JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid} ) };
                 var theCompiledHtml    = theTemplate(context);
                 $('#frameid2').contents().find('#previewarea').html(theCompiledHtml);
                   // Add the compiled html to the page
@@ -17,10 +16,9 @@ var prepareHtml  =  objWidgetData.template;
   return prepareHtml;
 };
 
-
 module.exports.validateRequestData = ( requestData ) => {
 
-  if( false == requestData.pathParameters ){
+  if( requestData.pathParameters == null  ){
     return false;
   }
 
@@ -29,8 +27,7 @@ module.exports.validateRequestData = ( requestData ) => {
               "userid":parseInt( requestData.pathParameters.userid ),
               "accesstoken":requestData.pathParameters.accesstoken
             };
+  
   return data;
-
-
 };
 

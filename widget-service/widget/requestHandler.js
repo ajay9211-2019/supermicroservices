@@ -1,12 +1,13 @@
 // load external files or modules.
-var response  = require(appRoot+'/widget/response');
-var table     = require(appRoot+'/widget/table');
-var helper    = require(appRoot+'/widget/helper');
-const viewsValue = 1;
+var response     = require(appRoot+'/widget/response');
+var table        = require(appRoot+'/widget/table');
+var helper       = require(appRoot+'/widget/helper');
+var traking 	 = require(appRoot+'/widget/traking');
 
 // Get request Handler
 module.exports.getRequestHandler = async function( event, context, callback ){
-	
+	// Validate request data
+
 	var requestData = await helper.validateRequestData( event );
 	if( false == requestData ){
 		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
@@ -19,50 +20,41 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 	if( objUserData.accesstoken != requestData.accesstoken || objUserData.accesstoken == '' ){
 		return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
 	}
-
 	var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
 	
-	if( typeof objWidgetData == "undefined" || objWidgetData.asinlist.length == 0 ){
-		return callback( null , response.getJsonResponse( '',400,'Asinlist not found:widgets.') );
+	if( typeof objWidgetData == "undefined" ){
+		return callback( null , response.getJsonResponse( '',400,'Widgets not found.') );
 	}
-
-	var objProductData = await table.getBatchProduct( objWidgetData.asinlist );
-	
-	if( !objProductData.sproducts ){
-		return callback( null , response.getJsonResponse( '',400,'Products not found:sproducts.') );
-	}
-
-	var preparedHtml = await helper.prepareHtml( objProductData , objWidgetData );
-	
+	// prepare traking id
+	var trakingid = traking.getTrakingId( objWidgetData.asinlist[0].region,objUserData.trackingid,objUserData.planid );
+	var preparedWidgetHtml = await helper.prepareWidgetHtml( objWidgetData , trakingid);
 	//update views users table & views table & swidgets
-	objUserData.views   = viewsValue+parseInt( objUserData.views );
-	objWidgetData.views = viewsValue+parseInt( objWidgetData.views );
 	
-	let viewData  = {
-					'userid': objUserData.userid,
-					'createtime':Date.now(),
-					'widgetid':requestData.widgetid
-					};
+	let intUserTotalViewvalue   = 1;
+	let intWidgetTotalViewvalue = 1;
+
+	if( typeof objWidgetData.views != 'undefined'){
+		intWidgetTotalViewvalue = intWidgetTotalViewvalue+parseInt( objWidgetData.views );
+	}
+	if( typeof objUserData.views != 'undefined'){
+		intUserTotalViewvalue = intUserTotalViewvalue+parseInt( objUserData.views );
+	}
+	
+	let prepareViewsData  = {
+							'userid': objUserData.userid,
+							'createtime':Date.now(),
+							'widgetid':requestData.widgetid
+						};
 					
-	table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, objWidgetData.views );				
-	table.updateViews( 'susers',{'userid':objUserData.userid}, objUserData.views );
-	table.put( 'sviews',viewData );
-
-	delete objProductData; delete objWidgetData; delete viewData;delete objUserData;delete requestData;
-	return callback( null , response.getHtmlResponse( preparedHtml  ) );
+	table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, intWidgetTotalViewvalue );				
+	table.updateViews( 'susers',{'userid':objUserData.userid}, intUserTotalViewvalue );
+	table.put( 'sviews',prepareViewsData );
+	console.log("=======return template========");
+	
+	delete objWidgetData; delete prepareViewsData;delete objUserData;delete requestData;
+	return callback( null , response.getHtmlResponse( preparedWidgetHtml ) );
 };
 
-// Post request Handler
-module.exports.postRequestHandler = ( event, context, callback ) => {
-   
-   return callback( null , response.getJsonResponse( {'data':'Hi post request'} ) );
-};
-
-// Put request Handler
-module.exports.putRequestHandler = ( event, context, callback ) => {
-   
-   return callback( null , response.getJsonResponse( {'data':'Hi put request'} ) );
-};
 
 
 
