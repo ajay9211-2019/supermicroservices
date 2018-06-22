@@ -3,7 +3,9 @@ module.exports.getJsonResponse = ( data={},statusCode=200 , Message='OK' ) => {
 
   let responseParam = {
   						headers: {
-                      	"Access-Control-Allow-Origin" : "*",
+                      	"Access-Control-Allow-Origin" : "*"
+
+                        //"X-Frame-Options"             : "*"
                          // Required for CORS support to work
                     	},
                         body: JSON.stringify({
@@ -20,6 +22,7 @@ module.exports.getHtmlResponse = ( data='') => {
   let responseParam = {
               headers: {
                         "Access-Control-Allow-Origin" : "*",
+                        "Cache-Control":"max-age=3600,private",
                          "content-type": "text/html", // Required for CORS support to work
                       },
                         body: data,

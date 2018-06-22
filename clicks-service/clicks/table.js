@@ -46,7 +46,7 @@ module.exports.put = ( tableName , jsonData ) => {
 };
 
 module.exports.updateClicks = ( tableName , jsonData,clickscount) => {
-	console.log( clickscount );
+	
 	let paramsTable = {
 			              TableName: tableName,
 			              Key:jsonData,

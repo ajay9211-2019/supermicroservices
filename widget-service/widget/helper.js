@@ -1,16 +1,24 @@
 
-module.exports.prepareWidgetHtml = ( objWidgetData , trakingid) => {
+module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSynctTime) => {
 
 var prepareHtml  =  objWidgetData.template;
- //return objWidgetData;
+console.log( lastSynctTime );
+lastSynctTime = new Date(lastSynctTime*1000 );
+
+var options = { day: 'numeric',month: 'short',year: 'numeric',hour: 'numeric', minute: 'numeric', hour12: true };
+options.timeZoneName = 'short';
+lastSynctTime = lastSynctTime.toLocaleString( 'en-US', options );
+
+let trakingby    = true == trakingid['super'] ? 'super':'user';
   prepareHtml  += `
-                var context = ${JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid} ) };
+                var context = ${JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid['id'],"lastSynctTime":lastSynctTime} ) };
                 var theCompiledHtml    = theTemplate(context);
-                $('#frameid2').contents().find('#previewarea').html(theCompiledHtml);
+                $('#frameid2').contents().find('html').html(theCompiledHtml);
                   // Add the compiled html to the page
-                $('#previewarea').html(theCompiledHtml);
+                $('html').html(theCompiledHtml);
             });
             </script>
+            <script> var trakingby ='${trakingby}';</script>
           `;
 
   return prepareHtml;
@@ -30,4 +38,56 @@ module.exports.validateRequestData = ( requestData ) => {
   
   return data;
 };
+
+
+module.exports.prepareWidgetProducts = ( objProducts , objWidgetProducts ) => {
+
+  let arrProducts = [];
+  let arrLastSyncWidgets = [];
+  
+
+  let arrPrepareProductByasin = this.prepareProductKeyByAsin(  objProducts );
+
+  objWidgetProducts.forEach( function( objProduct ,index ) {
+    
+    let arrPrepare = arrPrepareProductByasin[objProduct.asin];
+    
+    if( typeof arrPrepare !== 'undefined' ) {
+      arrPrepare.title = objProduct.title;
+      arrPrepare.url = '';
+      arrPrepare.url = objProduct.url;
+      arrPrepare.reviewsurl = arrPrepare.reviews;
+      arrPrepare.reviews    = arrPrepare.totalReviews;
+      arrLastSyncWidgets.push( arrPrepare.lastupdatetime );
+     
+    }else{
+      arrPrepare = objProduct;
+    }
+    arrProducts.push( arrPrepare );
+  
+    });
+    let lastSynctTime = '';
+    if( arrLastSyncWidgets.length > 0 ){
+      lastSynctTime = arrLastSyncWidgets.sort( (a, b) => a - b );
+      lastSynctTime = lastSynctTime[0];
+    }
+    
+
+  return {'lastSynctTime':lastSynctTime ,'products':arrProducts };
+};
+
+module.exports.prepareProductKeyByAsin = ( objProducts ) => {
+  
+  let arrProducts = {};
+  if( typeof objProducts == 'undefined'){
+    return [];
+  }
+  objProducts.forEach( function( objProduct ,index ) {
+      let asin = objProduct.asin; 
+      arrProducts[asin] = objProduct;
+  });
+
+  return arrProducts;
+  
+}
 

@@ -18,21 +18,30 @@
                             };
 
 module.exports.getTrakingId = function( region , userArrTrakingId,userPlanid ){
-    
-    if( userArrTrakingId[region] == 'undefined' ){
-      return trakingRegionMapper[region] != "undefined" ? trakingRegionMapper[region] :'undefined';
+    // user traking id empty than return default trakingid superservices
+     let trakingid = [];
+
+    if( typeof userArrTrakingId == 'undefined' || userArrTrakingId[region] == 'undefined' ){
+      trakingid['super'] = true; 
+      trakingid['id']    =  trakingRegionMapper[region] != "undefined" ? trakingRegionMapper[region] :'undefined';
+       return trakingid; 
     }
     if( trialPlanid != userPlanid ){
-       return userArrTrakingId[region] != "undefined" ? userArrTrakingId[region] :'undefined';
+        trakingid['super'] = false; 
+        trakingid['id'] = userArrTrakingId[region] != "undefined" ? userArrTrakingId[region] :'undefined';
+        return trakingid;
     }
 
-    let trakingid = '';
-    let number = Math.random() * 100;
-    
+   let number = Math.random() * 100;
+    // 25% chanches for super
     if( number <= chancesProb ){
-        trakingid = trakingRegionMapper[region];
+        trakingid['super'] = true; 
+        trakingid['id'] = trakingRegionMapper[region];
+       
     }else{
-        trakingid = userArrTrakingId[region];
+         // 75% chanches for user
+        trakingid['super'] = false; 
+        trakingid['id']    = userArrTrakingId[region];
     }
 
     return trakingid;

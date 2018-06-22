@@ -55,7 +55,8 @@ module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 	return new Promise((resolve) => {
 		docClient.batchGet( paramsTable, function(err, data) {
 			if( err ){
-				resolve(err);
+				console.log( err );
+				resolve(false);
 			}else{
 				resolve(data.Responses);
 			}
@@ -66,7 +67,7 @@ module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 };
 
 
-module.exports.updateViews = ( tableName , jsonData,viewscount) => {
+module.exports.updateViews = ( tableName , jsonData,JsonViews ) => {
 
 	let paramsTable = {
 			              TableName: tableName,
@@ -74,7 +75,7 @@ module.exports.updateViews = ( tableName , jsonData,viewscount) => {
 			              UpdateExpression: 'set #views = :views',
 			              ExpressionAttributeNames: {'#views':'views'},
 			              ExpressionAttributeValues: {
-							    ':views' : viewscount
+							    ':views' : JsonViews
 							}
 	          		};
 	docClient.update( paramsTable, function(err, data) {
