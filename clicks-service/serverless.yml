@@ -68,12 +68,15 @@ functions:
       - http:
           path: /clicks
           method: post
+          cors: true
       - http:
           path: /clicks
           method: get
+          cors: true
       - http:
           path: /clicks
           method: put
+          cors: true
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic

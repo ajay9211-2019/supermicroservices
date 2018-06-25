@@ -7,6 +7,7 @@ var helper        = require('./helper');
 module.exports.postRequestHandler = async ( event, context, callback ) => {
 
 	var requestData = await helper.validateRequestData( event );
+	
 	if( false == requestData ){
 		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
 	}

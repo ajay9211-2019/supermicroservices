@@ -43,7 +43,7 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 
 	// prepare traking id
 	var trakingid = await traking.getTrakingId( objWidgetData.asinlist[0].region,objUserData.trackingid,objUserData.planid );
-	var preparedWidgetHtml = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime );
+	var preparedWidgetHtml = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime,traking.getSuperTrakingIds(),objUserData.trackingid );
 	//update views users table & views table & swidgets
 	
 	let objUserTotalViewvalue   = {'super': 1, 'user':1};
@@ -67,8 +67,8 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 			objUserTotalViewvalue.super =  objUserData.views.super;
 			objUserTotalViewvalue.user  = 1+parseInt( objUserData.views.user );
 		}
-
 	}
+
 	let strTrakingBy = true == trakingid['super'] ? 'super':'user';
 	let prepareViewsData  = {
 							'userid': objUserData.userid,

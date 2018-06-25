@@ -1,5 +1,5 @@
 
-module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSynctTime) => {
+module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSynctTime,superTraking,userTraking ) => {
 
 var prepareHtml  =  objWidgetData.template;
 console.log( lastSynctTime );
@@ -9,9 +9,11 @@ var options = { day: 'numeric',month: 'short',year: 'numeric',hour: 'numeric', m
 options.timeZoneName = 'short';
 lastSynctTime = lastSynctTime.toLocaleString( 'en-US', options );
 
+var objTemplateData = {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid['id'],"lastSynctTime":lastSynctTime,"superTrakings":superTraking,"userTrakings":userTraking};
+
 let trakingby    = true == trakingid['super'] ? 'super':'user';
   prepareHtml  += `
-                var context = ${JSON.stringify( {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid['id'],"lastSynctTime":lastSynctTime} ) };
+                var context = ${JSON.stringify(objTemplateData) };
                 var theCompiledHtml    = theTemplate(context);
                 $('#frameid2').contents().find('html').html(theCompiledHtml);
                   // Add the compiled html to the page

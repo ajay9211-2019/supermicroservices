@@ -71,6 +71,7 @@ functions:
       - http:
           path: /widget/{id}/{userid}/{accesstoken}
           method: get
+          cors: true
       - http:
           path: /widget
           method: put

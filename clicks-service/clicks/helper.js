@@ -6,7 +6,7 @@ module.exports.validateRequestData = ( requestData ) => {
   if( typeof requestData.userid == 'undefined' || typeof requestData.accesstoken == 'undefined' || typeof requestData.widgetid == 'undefined' || typeof requestData.asin ==  'undefined' || typeof requestData.trackingby ==  'undefined'  ){
     return false;
   }
-  
+ 
   var data = {
               "widgetid":parseInt( requestData.widgetid ),
               "userid":parseInt( requestData.userid ),
@@ -14,6 +14,6 @@ module.exports.validateRequestData = ( requestData ) => {
               "asin":requestData.asin,
               "trackingby":requestData.trackingby
             };
-  return requestData;
+  return data;
 };
 

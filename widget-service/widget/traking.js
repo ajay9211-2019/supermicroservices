@@ -1,6 +1,7 @@
  
  const trialPlanid = 1;
  const chancesProb = 25;
+
  const trakingRegionMapper = {
                                 'com'     :'super-US',
                                 'com.br'  :'super-BR',
@@ -32,9 +33,9 @@ module.exports.getTrakingId = function( region , userArrTrakingId,userPlanid ){
         return trakingid;
     }
 
-   let number = Math.random() * 100;
-    // 25% chanches for super
-    if( number <= chancesProb ){
+   let number = Math.random();
+    // 20% chanches for super
+    if( number < 0.7 ){
         trakingid['super'] = true; 
         trakingid['id'] = trakingRegionMapper[region];
        
@@ -45,4 +46,9 @@ module.exports.getTrakingId = function( region , userArrTrakingId,userPlanid ){
     }
 
     return trakingid;
+};
+
+
+module.exports.getSuperTrakingIds = function( ){
+    return trakingRegionMapper;
 };
