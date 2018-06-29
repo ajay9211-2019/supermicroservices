@@ -65,16 +65,16 @@ functions:
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
     events:
+      # - http:
+      #     path: /widget
+      #     method: post
       - http:
-          path: /widget
-          method: post
-      - http:
-          path: /widget/{id}/{userid}/{accesstoken}
+          path: /{id}/{userid}/{accesstoken}
           method: get
           cors: true
-      - http:
-          path: /widget
-          method: put
+      # - http:
+      #     path: /widget
+      #     method: put
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic

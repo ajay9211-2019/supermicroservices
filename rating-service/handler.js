@@ -5,8 +5,7 @@ const requestHandler    = require( './rating/requestHandler');
 
 module.exports.rating = (event, context, callback) => {
   
-
-  switch ( event.httpMethod ) {
+	switch ( event.httpMethod ) {
     
     case "GET":
       return requestHandler.requestHandler( event, context, callback );

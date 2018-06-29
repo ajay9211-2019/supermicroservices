@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.omwidget = (event, context, callback) => {
+module.exports.oembedWidget = (event, context, callback) => {
   
   if( event.queryStringParameters == null || typeof event.queryStringParameters.url == 'undefined' || event.queryStringParameters.url == ''){
             
@@ -11,10 +11,9 @@ module.exports.omwidget = (event, context, callback) => {
                       } ),
                     };
 
-      callback(null, response);
+    callback(null, response);
             
   }
-
 
   var data  =   {
                   "title":"Spreadr Super-services",
@@ -25,13 +24,13 @@ module.exports.omwidget = (event, context, callback) => {
                   "html"   : "<iframe src=\""+event.queryStringParameters.url+"\" style=\"top: 0px; left: 0px; width: 100%; height: 100%; position: absolute;\">"
                 };
 
-const response = {
+  const response = {
                     statusCode: 200,
                     body: JSON.stringify( data ),
                 };
   
 
-  callback(null, response);
+return callback(null, response);
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // callback(null, { message: 'Go Serverless v1.0! Your function executed successfully!', event });

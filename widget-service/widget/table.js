@@ -13,17 +13,14 @@ module.exports.get = ( tableName , jsonWhereCondition ) => {
    	
 		docClient.get( paramsTable, function(err, data) {
 			if( err ){
-				resolve(err);
+				resolve(false);
 			}else{
 				resolve(data.Item);
 			}
 			
 		});
-		        
 	});
-
- };
-
+};
 
 module.exports.put = ( tableName , jsonData ) => {
 
@@ -37,10 +34,8 @@ module.exports.put = ( tableName , jsonData ) => {
 		   return err;
 		}
 		return data; 
-		 
-    });
+	});
 };
-
 
 module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 
@@ -66,18 +61,18 @@ module.exports.getBatchProduct = ( arrJsonAttributes ) => {
 	});
 };
 
-
 module.exports.updateViews = ( tableName , jsonData,JsonViews ) => {
 
 	let paramsTable = {
-			              TableName: tableName,
-			              Key:jsonData,
-			              UpdateExpression: 'set #views = :views',
-			              ExpressionAttributeNames: {'#views':'views'},
-			              ExpressionAttributeValues: {
+			            TableName: tableName,
+			            Key:jsonData,
+			            UpdateExpression: 'set #views = :views',
+			            ExpressionAttributeNames: {'#views':'views'},
+			            ExpressionAttributeValues: {
 							    ':views' : JsonViews
 							}
 	          		};
+	          		
 	docClient.update( paramsTable, function(err, data) {
 		if (err) {
 			return err;
@@ -85,8 +80,5 @@ module.exports.updateViews = ( tableName , jsonData,JsonViews ) => {
 			console.log("====update-views===");
 		return data; 
 		}
-
-
 	});
-			
 };

@@ -4,10 +4,7 @@ module.exports.getJsonResponse = ( data={},statusCode=200 , Message='OK' ) => {
   let responseParam = {
   						headers: {
                       	"Access-Control-Allow-Origin" : "*"
-
-                        //"X-Frame-Options"             : "*"
-                         // Required for CORS support to work
-                    	},
+                      },
                         body: JSON.stringify({
                               data: data,
                               message: Message,

@@ -65,7 +65,7 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: rating/{region}/{asin}
+          path: /{region}/{asin}
           method: get
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)

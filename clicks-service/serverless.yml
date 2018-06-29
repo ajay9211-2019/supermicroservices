@@ -66,17 +66,10 @@ functions:
 #    Check the event documentation for details
     events:
       - http:
-          path: /clicks
+          path: /
           method: post
           cors: true
-      - http:
-          path: /clicks
-          method: get
-          cors: true
-      - http:
-          path: /clicks
-          method: put
-          cors: true
+      
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
 #      - sns: greeter-topic
