@@ -1,14 +1,22 @@
 
-module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSynctTime,superTraking,userTraking,regionCurrencyCode,isgeolocalize='0' ) => {
+module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSyncTime,superTraking,userTraking,regionCurrencyCode,isgeolocalize='0' ) => {
 
 let options           = { day: 'numeric',month: 'short',year: 'numeric',hour: 'numeric', minute: 'numeric', hour12: true };
 options.timeZoneName  = 'short';
-lastSynctTime         = new Date(lastSynctTime*1000 );
-lastSynctTime         = lastSynctTime.toLocaleString( 'en-US', options );
-objWidgetData.data.theme["lastSynctTime"] = lastSynctTime;
+console.log( lastSyncTime );
+lastSyncTime         = new Date(lastSyncTime*1000 );
+lastSyncTime         = lastSyncTime.toLocaleString( 'en-US', options );
+objWidgetData.data.theme["lastsynctime"] = lastSyncTime;
 objWidgetData.data.theme["currencyCode"]  = regionCurrencyCode;
 
-let objTemplateData = {"products":objWidgetData.data.products,"theme":objWidgetData.data.theme,"trakingid":trakingid['id'],"superTrakings":superTraking,"userTrakings":userTraking};
+let objTemplateData = {
+                        "products":objWidgetData.data.products,
+                        "theme":objWidgetData.data.theme,
+                        "trakingid":trakingid['id'],
+                        "superTrakings":superTraking,
+                        "userTrakings":userTraking
+                      };
+                      
 let trakingby       = true == trakingid['super'] ? 'super':'user';
 let prepareHtml     =  objWidgetData.template;
 
@@ -21,28 +29,22 @@ prepareHtml     += `
                    iframe_resize(widgetstyledata);
 
                   }, 2000);
-        
-
+                
                 function iframe_resize(widgetstyledata){
                   
                    var height =  $("#maincontainer").height();
-                            
-                    
                     widgetstyledata["height"] = height+"px";
                     var msg = JSON.stringify(widgetstyledata);
-                   
                     if (parent.postMessage) {
                         parent.postMessage(msg, "*");
                     }
                 }
 
                 $(document).on("click",".superclick", function(){
-                         
-                         var region = $(this).data("region");
-                         var asin = $(this).data("asin");
-                         var link = "https://www.amazon."+region+"/dp/"+asin;
-
-                         var title = $(this).data("title");
+                   var region = $(this).data("region");
+                   var asin = $(this).data("asin");
+                   var link = "https://www.amazon."+region+"/dp/"+asin;
+                   var title = $(this).data("title");
                       
                       if(isgeolocalize == 1){
                             
@@ -79,8 +81,7 @@ prepareHtml     += `
                             });
               });
 
-            function findlocation_custom()
-             {     
+            function findlocation_custom(){     
                 $.ajax({
                       url: "https://extreme-ip-lookup.com/json/",
                       "content-type": "application/json; charset=utf-8",
@@ -92,7 +93,7 @@ prepareHtml     += `
                       $("#maincontainer").append('<input type="hidden" id="iptolocation" value="'+location+'">');
                       console.log(location);
                     });
-             }
+            }
             
             function localize(region,country_code,title,trankingby,link){
               
@@ -246,28 +247,29 @@ prepareHtml     += `
                  window.open(link, '_blank');
 
               }
-           
+              // update widget html
               var context = ${JSON.stringify(objTemplateData) };
                     var theCompiledHtml    = theTemplate(context);
                 // Add the compiled html to the page
-                    $('html').html(theCompiledHtml);
+                    // $('html').html(theCompiledHtml);
+                let disclaimerbox = '<p class="mb-1">This site is a participant in the Amazon Associates Program, an affiliate advertising program designed to provide a means to earn fees by linking to Amazon and affiliated sites.</p><p class="mb-1">Product prices and availability are accurate as of the date/time indicated and are subject to change. Any price and availability information displayed on Amazon at the time of purchase will apply to the purchase of the products.</p> <span class="text-right float-left"> Powered by: <a href="https://getsuper.co" target="_blank" rel="nofollow">Super</a> </span> <span class="text-right float-right"> <a href="javascript:void(0)" class="text-muted disclaimerboxlink">Close</a> </span>';
+                  document.documentElement.innerHTML = theCompiledHtml;
+                  document.getElementById("disclaimerbox").innerHTML= disclaimerbox;
                });
               </script>
               
               <script> 
-                
                 if( top !== self ) { 
                   console.log( "iframe loaded" );
-
                 }else{
-                  $(document).ready(function() {
-                    
+                 $(document).ready(function() {
                     var theme   = ${JSON.stringify( objTemplateData.theme.container ) };
                     var elementIdSuper = document.getElementById(theme.id);
                     elementIdSuper.style     = theme.styles;
                     elementIdSuper.className +=' '+ theme.class;
                   });
                 }
+              </script>
             `;
 
 
@@ -306,12 +308,10 @@ module.exports.prepareWidgetProducts = ( objProducts , objWidgetProducts ) => {
     });
     let lastSynctTime = '';
     if( arrLastSyncWidgets.length > 0 ){
-      lastSynctTime = arrLastSyncWidgets.sort( (a, b) => a - b );
-      lastSynctTime = lastSynctTime[0];
+      lastSynctTime =  Math.min.apply(null, arrLastSyncWidgets );
     }
     
-
-  return {'lastSynctTime':lastSynctTime ,'products':arrProducts };
+    return {'lastSynctTime':lastSynctTime ,'products':arrProducts };
 };
 
 module.exports.prepareProductKeyByAsin = ( objProducts ) => {

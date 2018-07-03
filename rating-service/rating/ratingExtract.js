@@ -26,8 +26,7 @@ module.exports.extractRatings = ( html , region) => {
           }
           let matches = revies.match(/\d+/g);
           if ( matches != null) {
-            console.log( revies );
-            revies = revies.match(/\d+/g).map(Number);
+           revies = revies.match(/\d+/g).map(Number);
           }else{
             revies = 0;
           }
@@ -41,6 +40,44 @@ module.exports.extractRatings = ( html , region) => {
 
         return response;
 
+     } catch( err ){
+      
+        var response = {
+                  "error":"getting exception."
+                };
+
+      return response;
+    }
+};
+
+
+module.exports.scrapExtractRatings = ( html , region) => {
+  
+  const $    = cheerio.load(html);
+  let rating = $('#centerCol #acrPopover').attr('title');
+  let revies = $('#centerCol #acrCustomerReviewText').html();
+  revies     = revies.replace(",","");
+  try {
+
+      rating = rating.split("");
+          
+      if( rating.length > 0 ){
+        rating = rating[0]+rating[1]+rating[2];
+      }
+      let matches = revies.match(/\d+/g);
+      if ( matches != null) {
+        revies = revies.match(/\d+/g).map(Number);
+      }else{
+        revies = 0;
+      }  
+
+      let response = {
+                  "star": parseFloat( rating ),
+                  "total_reviews":parseInt( revies )
+                };
+
+      return response;
+
     } catch( err ){
       
         var response = {
@@ -49,8 +86,7 @@ module.exports.extractRatings = ( html , region) => {
 
       return response;
     }
-  
-  
+
 };
 
 

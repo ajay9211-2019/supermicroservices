@@ -16,3 +16,21 @@ module.exports.prepareRating = ( productUrl , region) => {
 	});
 
 };
+
+
+module.exports.scrapRating = ( productUrl ) => { 
+
+	return new Promise((resolve) => {
+
+		request( productUrl ).then( ( { data } ) => {
+			  
+	        resolve( ratingExtract.scrapExtractRatings( data ) );
+	    }).catch(function (error) {
+	    	resolve({ 'error':true });
+	    });
+
+	});
+
+};
+
+
