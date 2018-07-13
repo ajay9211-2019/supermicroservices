@@ -1,18 +1,18 @@
  
 const trialPlanid = 1;
 const trakingRegionMapper = {
-                                'com'     :'super-US',
+                                'com'     :'getsuper02-20',
                                 'com.br'  :'super-BR',
                                 'ca'      :'super-CA',
                                 'cn'      :'super-CN',
                                 'de'      :'super-DE',
                                 'es'      :'super-ES',
-                                'fr'      :'super-FR',
+                                'fr'      :'getsuperfr-21',
                                 'in'      :'super-IN',
-                                'it'      :'super-IT',
+                                'it'      :'getsuperit-21',
                                 'co.jp'   :'super-JP',
                                 'com.mx'  :'super-MX',
-                                'co.uk'   :'super-UK',
+                                'co.uk'   :'getsuperuk-21',
                                 'com.au'  :'super-AU'
                             };
 
@@ -20,7 +20,7 @@ module.exports.getTrakingId = function( region , userArrTrakingId,userPlanid ){
     // user traking id empty than return default trakingid superservices
     let trakingid = [];
     
-    if( typeof userArrTrakingId == 'undefined' || userArrTrakingId[region] == 'undefined' ){
+    if( typeof userArrTrakingId == 'undefined' || userArrTrakingId[region] == 'undefined' || userArrTrakingId[region] === null  ){
       trakingid['super'] = true; 
       trakingid['id']    =  trakingRegionMapper[region] != "undefined" ? trakingRegionMapper[region] :'undefined';
        return trakingid; 
@@ -52,16 +52,16 @@ module.exports.getCurrencySymbolByRegion = function( region ){
     
     const symbolByRegionMapper = {
                                 "com"    :"&#36;",
-                                "com.br" :"&#66114",
-                                "cn"     :"&#165",
-                                "de"     :"&#107114",
+                                "com.br" :"&#66114;",
+                                "cn"     :"&#165;",
+                                "de"     :"&#107114;",
                                 "es"     :"&#8364;",
-                                "fr"     :"&#677270",
-                                "in"     :"&#8377",
-                                "it"     :"&#66114",
-                                "co.jp"  :"&#165",
-                                "com.mx" :"&#36",
-                                "co.uk"  :"&#163",
+                                "fr"     :"&#677270;",
+                                "in"     :"&#8377;",
+                                "it"     :"&#66114;",
+                                "co.jp"  :"&#165;",
+                                "com.mx" :"&#36;",
+                                "co.uk"  :"&#163;",
                                 'com.au' : "&#36;"
                             };
 

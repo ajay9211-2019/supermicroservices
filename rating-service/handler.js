@@ -10,8 +10,7 @@ module.exports.rating = (event, context, callback) => {
     case "GET":
       return requestHandler.requestHandler( event, context, callback );
     break;
-
-    default:
+	default:
       return callback( null , { statusCode : 500 , message:" Invalid Request Method"} );
     break;
   }

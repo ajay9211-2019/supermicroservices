@@ -7,83 +7,96 @@ var traking 	 = require(appRoot+'/widget/traking');
 // Get request Handler
 module.exports.getRequestHandler = async function( event, context, callback ){
 	// Validate request data
-	var requestData = await helper.validateRequestData( event );
-	
-	if( false == requestData ){
-		return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
-	}
-	var objUserData = await table.get( 'susers',{'userid':requestData.userid} );
-	// validate user and accesstoken
-	if( typeof objUserData == "undefined" ){
-		return callback( null , response.getJsonResponse( '',400,'Invalid user.' ) );
-	}
-	if( objUserData.accesstoken != requestData.accesstoken || objUserData.accesstoken == '' ){
-		return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
-	}
-	var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
-	
-	if( typeof objWidgetData == "undefined" ){
-		return callback( null , response.getJsonResponse( '',400,'Widget not found.') );
-	}
 
-	if( objWidgetData.asinlist.length == 0 ){
-		return callback( null , response.getHtmlResponse( "No products." ) );
-	}
-
-	// get realtime data from sproducts and map data to widget products;
-	var objProducts   = await table.getBatchProduct( objWidgetData.asinlist );
-	let lastSynctTime = '';
-
-	// prepare widget products
-	var preparedWidgetProducts = await helper.prepareWidgetProducts( objProducts.sproducts , objWidgetData.data.products );
-	if( typeof preparedWidgetProducts.products != "undefined" ){
-		objWidgetData.data.products = preparedWidgetProducts.products;
-		lastSynctTime = preparedWidgetProducts.lastSynctTime;
-	}
-	
-	// prepare traking id
-	var trakingid 			= await traking.getTrakingId( objWidgetData.asinlist[0].region,objUserData.trackingid,objUserData.planid );
-	var regionCurrencyCode  = traking.getCurrencySymbolByRegion( objWidgetData.asinlist[0].region );
-	var preparedWidgetHtml  = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime,traking.getSuperTrakingIds(),objUserData.trackingid, regionCurrencyCode, objUserData.isgeolocalize);
-	//update views users table & views table & swidgets
-	
-	let objUserTotalViewvalue   = {'super': 1, 'user':1};
-	let objWidgetTotalViewvalue = {'super': 1, 'user':1};
-
-	if( typeof objWidgetData.views != 'undefined'){
-		if( true == trakingid['super'] ){
-			objWidgetTotalViewvalue.super = 1+parseInt( objWidgetData.views.super );
-			objWidgetTotalViewvalue.user  = objWidgetData.views.user;
-		}else{
-			objWidgetTotalViewvalue.super =  objWidgetData.views.super;
-			objWidgetTotalViewvalue.user  = 1+parseInt( objWidgetData.views.user );
+	try{
+		var requestData = await helper.validateRequestData( event );
+		
+		if( false == requestData ){
+			return callback( null , response.getJsonResponse( '',400,' Invalid request pathParameters.'  ) );	
 		}
-	}
-	if( typeof objUserData.views != 'undefined'){
-		if( true == trakingid['super'] ){
-			objUserTotalViewvalue.super = 1+parseInt( objUserData.views.super );
-			objUserTotalViewvalue.user  = objUserData.views.user;
-		}else{
-			objUserTotalViewvalue.super =  objUserData.views.super;
-			objUserTotalViewvalue.user  = 1+parseInt( objUserData.views.user );
+		var objUserData = await table.get( 'susers',{'userid':requestData.userid} );
+		// validate user and accesstoken
+		if( typeof objUserData == "undefined" ){
+			return callback( null , response.getJsonResponse( '',400,'Invalid user.' ) );
 		}
-	}
+		if( objUserData.accesstoken != requestData.accesstoken || objUserData.accesstoken == '' ){
+			return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
+		}
+		var objWidgetData = await table.get( 'swidgets',{'userid':requestData.userid,'widgetid':requestData.widgetid} );
+		
+		if( typeof objWidgetData == "undefined" ){
+			return callback( null , response.getJsonResponse( '',400,'Widget not found.') );
+		}
 
-	let strTrakingBy = true == trakingid['super'] ? 'super':'user';
-	let prepareViewsData  = {
-							'userid': objUserData.userid,
-							'createtime':Date.now(),
-							'widgetid':requestData.widgetid,
-							'trakingby':strTrakingBy
-						};
-					
-	table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, objWidgetTotalViewvalue );				
-	table.updateViews( 'susers',{'userid':objUserData.userid}, objUserTotalViewvalue );
-	table.put( 'sviews',prepareViewsData );
-	delete objWidgetData; delete prepareViewsData;delete objUserData;delete requestData;delete objUserTotalViewvalue;delete objWidgetTotalViewvalue;
-	
-	console.log("=======return template========");
-	return callback( null , response.getHtmlResponse( preparedWidgetHtml ) );
+		if( objWidgetData.asinlist.length == 0 ){
+			return callback( null , response.getHtmlResponse( "No products." ) );
+		}
+
+		// get realtime data from sproducts and map data to widget products;
+		var objProducts   = await table.getBatchProduct( objWidgetData.asinlist );
+		let lastSynctTime = '';
+
+		// prepare widget products
+		var preparedWidgetProducts = await helper.prepareWidgetProducts( objProducts.sproducts , objWidgetData.data.products );
+		if( typeof preparedWidgetProducts.products != "undefined" ){
+			objWidgetData.data.products = preparedWidgetProducts.products;
+			lastSynctTime = preparedWidgetProducts.lastSynctTime;
+		}
+		
+		// prepare traking id
+		var trakingid 			= await traking.getTrakingId( objWidgetData.asinlist[0].region,objUserData.trackingid,objUserData.planid );
+		var regionCurrencyCode  = traking.getCurrencySymbolByRegion( objWidgetData.asinlist[0].region );
+		var preparedWidgetHtml  = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime,traking.getSuperTrakingIds(),objUserData.trackingid, regionCurrencyCode, objUserData.isgeolocalize);
+		//update views users table & views table & swidgets
+		
+		let objUserTotalViewvalue   = {'super': 1, 'user':1};
+		let objWidgetTotalViewvalue = {'super': 1, 'user':1};
+		if( true == trakingid['super'] ){
+			objWidgetTotalViewvalue.user = 0;
+			objUserTotalViewvalue.user   = 0;
+		}else{
+			objWidgetTotalViewvalue.super = 0;
+			objUserTotalViewvalue.super   = 0;
+		}
+
+		if( typeof objWidgetData.views != 'undefined'){
+			if( true == trakingid['super'] ){
+				objWidgetTotalViewvalue.super = 1+parseInt( objWidgetData.views.super );
+				objWidgetTotalViewvalue.user  = objWidgetData.views.user;
+			}else{
+				objWidgetTotalViewvalue.super =  objWidgetData.views.super;
+				objWidgetTotalViewvalue.user  = 1+parseInt( objWidgetData.views.user );
+			}
+		}
+		if( typeof objUserData.views != 'undefined'){
+			if( true == trakingid['super'] ){
+				objUserTotalViewvalue.super = 1+parseInt( objUserData.views.super );
+				objUserTotalViewvalue.user  = objUserData.views.user;
+			}else{
+				objUserTotalViewvalue.super =  objUserData.views.super;
+				objUserTotalViewvalue.user  = 1+parseInt( objUserData.views.user );
+			}
+		}
+
+		let strTrakingBy = true == trakingid['super'] ? 'super':'user';
+		let prepareViewsData  = {
+								'userid': objUserData.userid,
+								'createtime':Date.now(),
+								'widgetid':requestData.widgetid,
+								'trakingby':strTrakingBy
+							};
+						
+		table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, objWidgetTotalViewvalue );				
+		table.updateViews( 'susers',{'userid':objUserData.userid}, objUserTotalViewvalue );
+		table.put( 'sviews',prepareViewsData );
+		delete objWidgetData; delete prepareViewsData;delete objUserData;delete requestData;delete objUserTotalViewvalue;delete objWidgetTotalViewvalue;
+		
+		console.log("=======return template========");
+		return callback( null , response.getHtmlResponse( preparedWidgetHtml ) );
+   
+   	}catch( err ){
+      return callback( null , response.getJsonResponse( '',400,'getting exception.') );
+	}
 };
 
 

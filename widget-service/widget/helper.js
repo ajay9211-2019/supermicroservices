@@ -1,9 +1,67 @@
 
+
+module.exports.validateRequestData = ( requestData ) => {
+
+  return    {
+              "widgetid":parseInt( requestData.pathParameters.id ),
+              "userid":parseInt( requestData.pathParameters.userid ),
+              "accesstoken":requestData.pathParameters.accesstoken
+            };
+  };
+
+module.exports.prepareWidgetProducts = ( objProducts , objWidgetProducts ) => {
+
+  let arrProducts             = [];
+  let arrLastSyncWidgets      = [];
+  let arrPrepareProductByasin = this.prepareProductKeyByAsin(  objProducts );
+
+  objWidgetProducts.forEach( function( objProduct ,index ) {
+    
+    let arrPrepare = arrPrepareProductByasin[objProduct.asin];
+    
+    if( typeof arrPrepare !== 'undefined' ) {
+      arrPrepare.title        = objProduct.title;
+      arrPrepare.url          = objProduct.url;
+      if( parseInt( arrPrepare.price ) <= 0 ){
+        arrPrepare.price = 0;
+      }
+      arrLastSyncWidgets.push( arrPrepare.lastupdatetime );
+     
+    }else{
+      arrPrepare = objProduct;
+    }
+    arrProducts.push( arrPrepare );
+  
+    });
+    let lastSynctTime = '';
+    if( arrLastSyncWidgets.length > 0 ){
+      lastSynctTime =  Math.min.apply(null, arrLastSyncWidgets );
+    }
+    
+    return {'lastSynctTime':lastSynctTime ,'products':arrProducts };
+};
+
+module.exports.prepareProductKeyByAsin = ( objProducts ) => {
+  
+  let arrProducts = {};
+  if( typeof objProducts == 'undefined'){
+    return[];
+  }
+  objProducts.forEach( function( objProduct ,index ) {
+      let asin = objProduct.asin; 
+      arrProducts[asin] = objProduct;
+  });
+
+  return arrProducts;
+}
+
+
+
 module.exports.prepareWidgetHtml = ( objWidgetData , trakingid, lastSyncTime,superTraking,userTraking,regionCurrencyCode,isgeolocalize='0' ) => {
 
 let options           = { day: 'numeric',month: 'short',year: 'numeric',hour: 'numeric', minute: 'numeric', hour12: true };
 options.timeZoneName  = 'short';
-console.log( lastSyncTime );
+
 lastSyncTime         = new Date(lastSyncTime*1000 );
 lastSyncTime         = lastSyncTime.toLocaleString( 'en-US', options );
 objWidgetData.data.theme["lastsynctime"] = lastSyncTime;
@@ -25,10 +83,7 @@ prepareHtml     += `
                   var isgeolocalize ='${isgeolocalize}';
                   var trakingid     = '${trakingid['id']}';
 
-                  setTimeout(function() {  
-                   iframe_resize(widgetstyledata);
-
-                  }, 2000);
+                  
                 
                 function iframe_resize(widgetstyledata){
                   
@@ -39,6 +94,25 @@ prepareHtml     += `
                         parent.postMessage(msg, "*");
                     }
                 }
+
+                $(document).ready(function() {
+                  var myStylesheet = document.querySelector('.superwait');
+                 
+                  myStylesheet.onload = function() {
+                     document.documentElement.style.display = "block";
+                     iframe_resize(widgetstyledata);
+                  }
+
+                  setTimeout(function(){
+                    document.documentElement.style.display = "block";
+                    iframe_resize(widgetstyledata);
+                     if (navigator.userAgent.match(/msie/i) || navigator.userAgent.match(/trident/i) ){
+                      $(".pcard").height( $(".pcard").height());
+                    }
+                  },2500);
+
+                 
+              });
 
                 $(document).on("click",".superclick", function(){
                    var region = $(this).data("region");
@@ -70,7 +144,7 @@ prepareHtml     += `
                                 console.log("clickdata",clickdata);
 
                             $.ajax({
-                                url:"https://widgetstaging.getsuper.co/clicks",
+                                url:"https://widget.getsuper.co/clicks",
                                 contentType: 'application/json',
                                 method:"POST",
                                 dataType : "json",
@@ -87,11 +161,9 @@ prepareHtml     += `
                       "content-type": "application/json; charset=utf-8",
                       type: "GET",
                     }).done(function(location) {
-                        console.log(location);
                       var location = location.countryCode.toLowerCase();
-
                       $("#maincontainer").append('<input type="hidden" id="iptolocation" value="'+location+'">');
-                      console.log(location);
+                      
                     });
             }
             
@@ -161,7 +233,6 @@ prepareHtml     += `
                                   var tag = context.superTrakings['fr'];
                               }
 
-                              console.log(tag);
                               link = "http://amazon.fr/s/?field-keywords=" + encodeURIComponent(title) + "&tag="+tag;
                             }
                             break;
@@ -254,77 +325,28 @@ prepareHtml     += `
                     // $('html').html(theCompiledHtml);
                 let disclaimerbox = '<p class="mb-1">This site is a participant in the Amazon Associates Program, an affiliate advertising program designed to provide a means to earn fees by linking to Amazon and affiliated sites.</p><p class="mb-1">Product prices and availability are accurate as of the date/time indicated and are subject to change. Any price and availability information displayed on Amazon at the time of purchase will apply to the purchase of the products.</p> <span class="text-right float-left"> Powered by: <a href="https://getsuper.co" target="_blank" rel="nofollow">Super</a> </span> <span class="text-right float-right"> <a href="javascript:void(0)" class="text-muted disclaimerboxlink">Close</a> </span>';
                   document.documentElement.innerHTML = theCompiledHtml;
+                  document.documentElement.style.display = "none";
                   document.getElementById("disclaimerbox").innerHTML= disclaimerbox;
                });
               </script>
               
               <script> 
                 if( top !== self ) { 
-                  console.log( "iframe loaded" );
+                  
                 }else{
                  $(document).ready(function() {
                     var theme   = ${JSON.stringify( objTemplateData.theme.container ) };
+                    console.log( "theme",theme );
                     var elementIdSuper = document.getElementById(theme.id);
-                    elementIdSuper.style     = theme.styles;
-                    elementIdSuper.className +=' '+ theme.class;
+                    elementIdSuper.setAttribute('style',theme.styles );
+                    elementIdSuper.style    = theme.styles;
+                    elementIdSuper.className +=theme.class;
                   });
                 }
-              </script>
+            </script>
             `;
 
 
   return prepareHtml;
 };
-
-module.exports.validateRequestData = ( requestData ) => {
-
-  return    {
-              "widgetid":parseInt( requestData.pathParameters.id ),
-              "userid":parseInt( requestData.pathParameters.userid ),
-              "accesstoken":requestData.pathParameters.accesstoken
-            };
-  };
-
-module.exports.prepareWidgetProducts = ( objProducts , objWidgetProducts ) => {
-
-  let arrProducts             = [];
-  let arrLastSyncWidgets      = [];
-  let arrPrepareProductByasin = this.prepareProductKeyByAsin(  objProducts );
-
-  objWidgetProducts.forEach( function( objProduct ,index ) {
-    
-    let arrPrepare = arrPrepareProductByasin[objProduct.asin];
-    
-    if( typeof arrPrepare !== 'undefined' ) {
-      arrPrepare.title        = objProduct.title;
-      arrPrepare.url          = objProduct.url;
-      arrLastSyncWidgets.push( arrPrepare.lastupdatetime );
-     
-    }else{
-      arrPrepare = objProduct;
-    }
-    arrProducts.push( arrPrepare );
-  
-    });
-    let lastSynctTime = '';
-    if( arrLastSyncWidgets.length > 0 ){
-      lastSynctTime =  Math.min.apply(null, arrLastSyncWidgets );
-    }
-    
-    return {'lastSynctTime':lastSynctTime ,'products':arrProducts };
-};
-
-module.exports.prepareProductKeyByAsin = ( objProducts ) => {
-  
-  let arrProducts = {};
-  if( typeof objProducts == 'undefined'){
-    return[];
-  }
-  objProducts.forEach( function( objProduct ,index ) {
-      let asin = objProduct.asin; 
-      arrProducts[asin] = objProduct;
-  });
-
-  return arrProducts;
-}
 

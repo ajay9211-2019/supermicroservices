@@ -1,4 +1,5 @@
 'use strict';
+var url = require('url');
 
 module.exports.oembedWidget = (event, context, callback) => {
   
@@ -14,19 +15,20 @@ module.exports.oembedWidget = (event, context, callback) => {
     callback(null, response);
             
   }
-
+  var data = url.parse(event.queryStringParameters.url, true);
+  data = data.path.split('/');
   var data  =   {
-                  "title":"Spreadr Super-services",
+                  "title":"Super-services",
                   "version": "1.0",
                   "type": "rich",
                   "url": event.queryStringParameters.url,
                   "author_name": "Spreadr",
-                  "html"   : "<iframe src=\""+event.queryStringParameters.url+"\" style=\"top: 0px; left: 0px; width: 100%; height: 100%; position: absolute;\">"
+                  "html"   : "<iframe id=\"super"+data[2]+"\" src=\""+event.queryStringParameters.url+"\" marginheight=\"0\" marginwidth=\"0\" scrolling=\"no\" style=\"overflow: hidden; width: 100%;\" frameborder=\"0\" ></iframe><script src=\"https://files.getsuper.co/super.js\" async></script>"
                 };
-
+// <script src=\"https://files.getsuper.co/super.js\" async></script>
   const response = {
                     statusCode: 200,
-                    body: JSON.stringify( data ),
+                    body: JSON.stringify(  data ),
                 };
   
 

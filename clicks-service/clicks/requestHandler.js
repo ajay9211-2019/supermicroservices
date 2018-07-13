@@ -5,7 +5,7 @@ var helper        = require('./helper');
 
 // POST request Handler  
 module.exports.postRequestHandler = async ( event, context, callback ) => {
-
+	console.log( "sfsf");
 	var requestData = await helper.validateRequestData( event );
 	
 	if( false == requestData ){
@@ -28,7 +28,13 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 
     let objUserTotalViewvalue   = {'super': 1, 'user':1};
 	let objWidgetTotalViewvalue = {'super': 1, 'user':1};
-	
+	if( 'super' == requestData.trackingby ){
+		objWidgetTotalViewvalue.user = 0;
+		objUserTotalViewvalue.user   = 0;
+	}else{
+		objWidgetTotalViewvalue.super = 0;
+		objUserTotalViewvalue.super   = 0;
+	}
 	if(  typeof objWidgetData.clicks !== 'undefined' ){
 		
 		if( 'super' == requestData.trackingby ){
