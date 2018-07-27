@@ -20,7 +20,7 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 	if( objUserData.accesstoken != requestData.accesstoken ){
 		return callback( null , response.getJsonResponse( '',400,'User authentication failed.' ) );
 	}
-	var widgetAnalytics   = await table.get( "widgetAnalytics",{'widgetid': requestData.widgetid } );
+	var widgetAnalytics   = await table.get( "swidgetanalytics",{'widgetid': requestData.widgetid } );
 	
     // let objUserTotalViewvalue   = {'super': 1, 'user':1};
 	let objWidgetTotalViewvalue = {'super': 1, 'user':1};
@@ -42,17 +42,6 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 		}
 	}
 
-	// if( typeof objUserData.clicks !== 'undefined' ){
-		
-	// 	if( 'super' == requestData.trackingby ){
-	// 		objUserTotalViewvalue.super = 1+parseInt( objUserData.clicks.super );
-	// 		objUserTotalViewvalue.user  = objUserData.clicks.user;
-	// 	}else{
-	// 		objUserTotalViewvalue.super =  objUserData.clicks.super;
-	// 		objUserTotalViewvalue.user  = 1+parseInt( objUserData.clicks.user );
-	// 	}
-	// }
-	
 	let prepareViewsData = {
 				    		'userid':requestData.userid,
 				    		'createtime':Date.now(),
@@ -62,8 +51,7 @@ module.exports.postRequestHandler = async ( event, context, callback ) => {
 				    		};
 	var responseData = table.put( "sclicks",prepareViewsData );	
 	table.updateClicks( 'swidgetanalytics',{'widgetid': requestData.widgetid }, objWidgetTotalViewvalue );    		
-    // table.updateClicks( 'susers',{'userid':objUserData.userid}, objUserTotalViewvalue );
-	
+   
 	return callback( null , response.getJsonResponse( {'status': responseData} ) );
 };
 
