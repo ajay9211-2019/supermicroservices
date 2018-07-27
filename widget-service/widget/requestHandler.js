@@ -47,37 +47,40 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 		var trakingid 			= await traking.getTrakingId( objWidgetData.asinlist[0].region,objUserData.trackingid,objUserData.planid );
 		var regionCurrencyCode  = traking.getCurrencySymbolByRegion( objWidgetData.asinlist[0].region );
 		var preparedWidgetHtml  = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime,traking.getSuperTrakingIds(),objUserData.trackingid, regionCurrencyCode, objUserData.isgeolocalize);
-		//update views users table & views table & swidgets
-		
-		let objUserTotalViewvalue   = {'super': 1, 'user':1};
+		//update views users table & views table & widgetAnalytics
+		var widgetAnalytics   = await table.get( "widgetAnalytics",{'widgetid': objWidgetData.widgetid } );
+
+		// let objUserTotalViewvalue   = {'super': 1, 'user':1};
 		let objWidgetTotalViewvalue = {'super': 1, 'user':1};
 		if( true == trakingid['super'] ){
 			objWidgetTotalViewvalue.user = 0;
-			objUserTotalViewvalue.user   = 0;
+			// objUserTotalViewvalue.user   = 0;
 		}else{
 			objWidgetTotalViewvalue.super = 0;
-			objUserTotalViewvalue.super   = 0;
+			// objUserTotalViewvalue.super   = 0;
 		}
 
-		if( typeof objWidgetData.views != 'undefined'){
+		if( typeof widgetAnalytics !="undefined" && typeof widgetAnalytics.views != 'undefined'){
+			
 			if( true == trakingid['super'] ){
-				objWidgetTotalViewvalue.super = 1+parseInt( objWidgetData.views.super );
-				objWidgetTotalViewvalue.user  = objWidgetData.views.user;
+				objWidgetTotalViewvalue.super = 1+parseInt( widgetAnalytics.views.super );
+				objWidgetTotalViewvalue.user  = widgetAnalytics.views.user;
 			}else{
-				objWidgetTotalViewvalue.super =  objWidgetData.views.super;
-				objWidgetTotalViewvalue.user  = 1+parseInt( objWidgetData.views.user );
+				objWidgetTotalViewvalue.super =  widgetAnalytics.views.super;
+				objWidgetTotalViewvalue.user  = 1+parseInt( widgetAnalytics.views.user );
 			}
 		}
-		if( typeof objUserData.views != 'undefined'){
-			if( true == trakingid['super'] ){
-				objUserTotalViewvalue.super = 1+parseInt( objUserData.views.super );
-				objUserTotalViewvalue.user  = objUserData.views.user;
-			}else{
-				objUserTotalViewvalue.super =  objUserData.views.super;
-				objUserTotalViewvalue.user  = 1+parseInt( objUserData.views.user );
-			}
-		}
-
+		
+		// if( typeof objUserData.views != 'undefined'){
+		// 	if( true == trakingid['super'] ){
+		// 		objUserTotalViewvalue.super = !isNaN( objUserData.views.super ) ? 1+parseInt( objUserData.views.super ) : 1;
+		// 		objUserTotalViewvalue.user  = !isNaN( objUserData.views.user ) ? objUserData.views.user : 0;
+		// 	}else{
+		// 		objUserTotalViewvalue.super =  !isNaN( objUserData.views.super )  ? objUserData.views.super : 0;
+		// 		objUserTotalViewvalue.user  = !isNaN( objUserData.views.user )  ? 1+parseInt( objUserData.views.user )  : 1;
+		// 	}
+		// }
+		
 		let strTrakingBy = true == trakingid['super'] ? 'super':'user';
 		let prepareViewsData  = {
 								'userid': objUserData.userid,
@@ -85,9 +88,9 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 								'widgetid':requestData.widgetid,
 								'trakingby':strTrakingBy
 							};
-						
-		table.updateViews( 'swidgets',{'userid':objUserData.userid, 'widgetid': objWidgetData.widgetid}, objWidgetTotalViewvalue );				
-		table.updateViews( 'susers',{'userid':objUserData.userid}, objUserTotalViewvalue );
+
+		table.updateViews( 'swidgetanalytics',{'widgetid': objWidgetData.widgetid }, objWidgetTotalViewvalue );				
+		// table.updateViews( 'susers',{'userid':objUserData.userid}, objUserTotalViewvalue );
 		table.put( 'sviews',prepareViewsData );
 		delete objWidgetData; delete prepareViewsData;delete objUserData;delete requestData;delete objUserTotalViewvalue;delete objWidgetTotalViewvalue;
 		

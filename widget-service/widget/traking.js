@@ -8,12 +8,12 @@ const trakingRegionMapper = {
                                 'de'      :'super-DE',
                                 'es'      :'super-ES',
                                 'fr'      :'getsuperfr-21',
-                                'in'      :'super-IN',
+                                'in'      :'getsuperin-21 for india',
                                 'it'      :'getsuperit-21',
                                 'co.jp'   :'super-JP',
                                 'com.mx'  :'super-MX',
                                 'co.uk'   :'getsuperuk-21',
-                                'com.au'  :'super-AU'
+                                'com.au'  :'getsuperau-22'
                             };
 
 module.exports.getTrakingId = function( region , userArrTrakingId,userPlanid ){

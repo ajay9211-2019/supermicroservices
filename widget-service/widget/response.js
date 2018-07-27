@@ -11,6 +11,7 @@ module.exports.getJsonResponse = ( data={},statusCode=200 , Message='OK' ) => {
                               message: Message,
                               statusCode: statusCode,
                         }),
+                        statusCode: 200
                     };
   return responseParam;
 };
@@ -26,6 +27,7 @@ module.exports.getHtmlResponse = ( data='') => {
                          "X-Content-Type-Options":"nosniff"
                       },
                         body: data,
+                        statusCode: 200
                     };
   return responseParam;
 

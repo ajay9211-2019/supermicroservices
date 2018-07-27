@@ -72,8 +72,10 @@ let objTemplateData = {
                         "theme":objWidgetData.data.theme,
                         "trakingid":trakingid['id'],
                         "superTrakings":superTraking,
-                        "userTrakings":userTraking
+                        "userTrakings":userTraking,
+                        "widgetid" : objWidgetData.widgetid
                       };
+                     
                       
 let trakingby       = true == trakingid['super'] ? 'super':'user';
 let prepareHtml     =  objWidgetData.template;
