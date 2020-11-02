@@ -48,7 +48,7 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 		var regionCurrencyCode  = traking.getCurrencySymbolByRegion( objWidgetData.asinlist[0].region );
 		var preparedWidgetHtml  = await helper.prepareWidgetHtml( objWidgetData , trakingid , lastSynctTime,traking.getSuperTrakingIds(),objUserData.trackingid, regionCurrencyCode, objUserData.isgeolocalize);
 		//update views users table & views table & widgetAnalytics
-		var widgetAnalytics   = await table.get( "widgetAnalytics",{'widgetid': objWidgetData.widgetid } );
+		var widgetAnalytics   = await table.get( "swidgetanalytics",{'widgetid': objWidgetData.widgetid } );
 
 		// let objUserTotalViewvalue   = {'super': 1, 'user':1};
 		let objWidgetTotalViewvalue = {'super': 1, 'user':1};
@@ -70,16 +70,6 @@ module.exports.getRequestHandler = async function( event, context, callback ){
 				objWidgetTotalViewvalue.user  = 1+parseInt( widgetAnalytics.views.user );
 			}
 		}
-		
-		// if( typeof objUserData.views != 'undefined'){
-		// 	if( true == trakingid['super'] ){
-		// 		objUserTotalViewvalue.super = !isNaN( objUserData.views.super ) ? 1+parseInt( objUserData.views.super ) : 1;
-		// 		objUserTotalViewvalue.user  = !isNaN( objUserData.views.user ) ? objUserData.views.user : 0;
-		// 	}else{
-		// 		objUserTotalViewvalue.super =  !isNaN( objUserData.views.super )  ? objUserData.views.super : 0;
-		// 		objUserTotalViewvalue.user  = !isNaN( objUserData.views.user )  ? 1+parseInt( objUserData.views.user )  : 1;
-		// 	}
-		// }
 		
 		let strTrakingBy = true == trakingid['super'] ? 'super':'user';
 		let prepareViewsData  = {

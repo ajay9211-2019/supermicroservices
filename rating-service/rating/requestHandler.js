@@ -2,6 +2,7 @@
 var rating    = require('./rating');
 var response  = require('./response');
 const sleep   = require('util').promisify(setTimeout); 
+const proxyKey = '75725200620753969272101496870389';
 
 module.exports.requestHandler = async( event, context, callback ) => {
 
@@ -14,6 +15,7 @@ module.exports.requestHandler = async( event, context, callback ) => {
   if( typeof ratingResponse.error != 'undefined' || true == ratingResponse.error ){
      console.log( "wait 2 sec and retry prepareRating.");
       await sleep(2000);
+      let proxyUrl = 'https://api.scraperapi.com/?key='+proxyKey+'&url='+productUrl;
       let ratingRes = await rating.prepareRating( productUrl ,region );
       // if rating failed second time than we scraped data
       if( typeof ratingRes.error != 'undefined' || true == ratingRes.error ){

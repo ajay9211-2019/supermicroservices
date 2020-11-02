@@ -22,6 +22,12 @@ module.exports.prepareWidgetProducts = ( objProducts , objWidgetProducts ) => {
     if( typeof arrPrepare !== 'undefined' ) {
       arrPrepare.title        = objProduct.title;
       arrPrepare.url          = objProduct.url;
+      if( arrPrepare.stars == -1 ){
+        arrPrepare.stars = 0;
+      }
+      if( arrPrepare.reviews == -1 ){
+        arrPrepare.reviews = 0;
+      }
       if( parseInt( arrPrepare.price ) <= 0 ){
         arrPrepare.price = 0;
       }
@@ -73,7 +79,7 @@ let objTemplateData = {
                         "trakingid":trakingid['id'],
                         "superTrakings":superTraking,
                         "userTrakings":userTraking,
-                        "widgetid" : objWidgetData.widgetid
+                        "swidgetid" : objWidgetData.widgetid
                       };
                      
                       
